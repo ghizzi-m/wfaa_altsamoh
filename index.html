@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أبطال التسامح: اختبار قيمة التسامح</title>
+    <style>
+        /* Base CSS Variables for Dynamic Th... */
+        :root {
+            --primary-color: #00796b;      /* Teal/Dark Green (Main Heading, Core Text) */
+            --secondary-color: #4db6ac;    /* Light Teal (Borders) */
+            --background-light: #e3f2fd;   /* Light Blue (Text Section Background) */
+            --highlight-color: #ff9800;    /* Warm Orange (Scoreboard) */
+            --accent-color: #ffb74d;       /* Light Orange (Question Highlight) */
+            --results-bg: #e0f7fa;         /* Light Cyan (Results Background) */
+            --text-dark: #1565c0;          /* Dark Blue (Question Text) */
+            --result-score-highlight: #CC0000; /* Dark Red (Final Score) */
+            --score-label-color: #5D3A9B; /* Deep Violet/Purple for Labels */
+            --score-value-color: #CC0000; /* Dark Red for Values */
+        }
+
+        /* Female/Pink Theme Variables (Will be set by JS) */
+        .female-theme {
+            --primary-color: #AD1457 !important;      /* Deep Pink */
+            --secondary-color: #f48fb1 !important;    /* Light Pink (Borders) */
+            --background-light: #fce4ec !important;   /* Very Light Pink (Text Section Background) */
+            --highlight-color: #ff5722 !important;    /* Deep Orange (Scoreboard) */
+            --accent-color: #f06292 !important;       /* Pink (Question Highlight) */
+            --results-bg: #f8bbd0 !important;         /* Soft Pink (Results Background) */
+            --text-dark: #880e4f !important;          /* Darker Pink (Question Text) */
+        }
+
+        /* Global Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f7f7f7;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 24px 0;
+            font-size: 28px; /* Base Font Size */
+            text-align: right;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 50, 80, 0.1);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 4px solid var(--secondary-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 1.6em; 
+        }
+        h2 {
+            font-size: 1.3em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        /* Text Section (Reading Material) */
+        .text-section {
+            position: relative;
+            background-color: var(--background-light);
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            padding-top: 45px;
+            margin-bottom: 35px;
+            border-radius: 12px;
+            max-height: 450px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 1em; /* Fixed size based on new body font */
+            font-weight: bold; 
+        }
+        .text-section .read-instruction {
+            color: #FF0000;
+            font-size: 1.1em; /* Larger than surrounding text */
+            display: block;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .audio-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5em;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        .audio-icon:hover {
+            color: var(--highlight-color);
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--score-label-color);
+            margin-bottom: 30px;
+            padding: 18px;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            background-color: #fff3e0;
+        }
+        .score-board span {
+            color: var(--score-value-color);
+            margin-left: 5px;
+        }
+        /* Question Text and Elements */
+        .question {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            border-left: 6px solid var(--accent-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .question p {
+            font-weight: bold;
+            margin-top: 0;
+            font-size: 1.1em; /* Question text size */
+            color: var(--text-dark);
+        }
+        /* Option Buttons - Large, clear, and BOLD */
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 18px 25px; 
+            margin: 10px 0;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            background-color: var(--background-light);
+            cursor: pointer;
+            text-align: right;
+            transition: all 0.3s ease;
+            font-size: 1em; 
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #4CAF50 !important;
+            color: white;
+            border-color: #388E3C !important;
+        }
+        .incorrect {
+            background-color: #F44336 !important;
+            color: white;
+            border-color: #D32F2F !important;
+        }
+        /* Fill in the Blanks Inputs - Stage 3 */
+        .fill-in input[type="text"] {
+            padding: 15px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 20%; 
+            margin-left: 10px;
+            font-size: 1em; 
+            text-align: right;
+        }
+        /* Check Button Styling (Stage 3) */
+        .check-btn {
+            background-color: #A9A9A9; /* Gray */
+            color: white;
+            padding: 12px 25px; 
+            border: 2px solid #808080;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em; 
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-right: 15px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+        .check-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        /* Stage Buttons - Large and clear */
+        .stage-btn, #start-quiz-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 18px 40px; 
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em; 
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
+            width: fit-content;
+            margin: 25px auto 0;
+        }
+        .results {
+            text-align: center;
+            margin-top: 30px;
+            padding: 40px;
+            background-color: var(--results-bg);
+            border-radius: 15px;
+            color: #263238;
+            font-size: 1.15em;
+            font-weight: bold;
+        }
+        /* Styling for the small warning text in Stage 3 */
+        .stage-3-note {
+            font-size: 0.8em; 
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .stage-3-note .red-text {
+            color: #FF0000;
+            background-color: #FFFFE0; 
+            padding: 5px 10px;
+            border-radius: 10px;
+            border: 2px dashed var(--primary-color); 
+            font-weight: 700;
+            display: inline-block;
+        }
+        /* Achievement Message Style (Result Page) */
+        #final-message {
+            margin: 20px auto;
+            padding: 15px;
+            border: 3px dashed var(--primary-color); 
+            border-radius: 10px;
+            background-color: #E0FFFF; 
+            font-size: 1.2em;
+            color: var(--text-dark);
+            max-width: 80%;
+        }
+        /* Final Score and Data Highlight */
+        #final-score, #final-max-score {
+             color: var(--result-score-highlight);
+             font-size: 1.2em;
+        }
+        .student-data-highlight {
+            color: var(--result-score-highlight);
+            font-size: 1.1em; 
+        }
+        /* Start Screen Specific Styles */
+        #start-screen {
+            text-align: center;
+            padding: 60px;
+            background-color: var(--results-bg); 
+            border-radius: 15px;
+            border: 3px solid var(--secondary-color);
+        }
+        .input-group {
+            margin-bottom: 25px;
+            display: flex; 
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        .input-group label {
+            font-size: 1.2em; 
+            color: var(--text-dark);
+            text-align: right;
+            flex-basis: 30%; 
+            font-weight: bold;
+        }
+        .input-group input[type="text"] {
+            padding: 15px;
+            font-size: 1.1em; 
+            border: 2px solid var(--secondary-color);
+            background-color: #fff;
+            margin-top: 0;
+            width: 48%; 
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+        /* Gender Selection Buttons Styling */
+        .radio-group-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-basis: 48%; 
+            justify-content: space-between;
+        }
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+        .radio-group label {
+            padding: 12px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.3s;
+            font-weight: 700;
+            color: var(--primary-color);
+            flex-grow: 1; 
+            text-align: center;
+            font-size: 1em;
+            display: block;
+        }
+        .radio-group input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer Style (Adjusted for requested changes) */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1em; /* Increased from 0.8em */
+            color: #000000; /* Changed to black */
+            font-weight: bold; /* Added bold */
+        }
+    </style>
+</head>
+<body id="game-body">
+
+<div class="container">
+    <h1>👑 أبطال التسامح: اختبار قيمة التسامح 🕊️</h1>
+
+    <div id="start-screen" class="stage" style="display: block;">
+        <h2>أهلاً بك في اختبار أبطال التسامح!</h2>
+        <p style="font-size: 1.1em; color: #546e7a; margin-bottom: 35px;">الرجاء إدخال بياناتك للمتابعة:</p>
+        
+        <div class="input-group">
+            <label for="student-name">الاسم الثلاثي:</label>
+            <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي هنا" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="student-class">الصف والفصل:</label>
+            <input type="text" id="student-class" placeholder="مثال: الصف الخامس أ" required>
+        </div>
+        
+        <div class="radio-group-container">
+            <div class="radio-group">
+                <input type="radio" name="gender" id="gender-female" value="طالبة" required><label for="gender-female">طالبة</label>
+                <input type="radio" name="gender" value="طالب" id="gender-male" required><label for="gender-male">طالب</label>
+            </div>
+        </div>
+        
+        <button id="start-quiz-btn" onclick="checkInputsAndGoToIntro()">ابدأ الاختبار ✨</button>
+    </div>
+
+    <div id="intro-page-content" class="stage" style="display: none;">
+        
+        <button class="stage-btn" id="start-quiz-main-btn" onclick="startQuiz()" style="width: 100%; margin-bottom: 20px;">انقر هنا لتبدأ مهمة التسامح!</button>
+
+        <div class="text-section" id="intro-text-section-content">
+            <span class="read-instruction">اقرأ النص جيداً قبل البدء في حل الأسئلة.</span>
+            <p><b>التسامح:</b> خلق شامل ينضوي تحته عدة أخلاق أخرى ، ومن أهمها: الرحمة، والرأفة والعطف، وخلق السلام الذي يعد الشعار الأول للإسلام والمسلمين ، والعدل والإحسان ، والعفو والصفح عن المسيئين ، وبخاصة عند القدرة على الرد ، والاعتدال وعدم التشدد ، ونبذ التعصب في صوره الجاهلية كلها .</p>
+            <p>وقد ربط النبي عليه الصلاة والسلام بين السماحة وبين أصل الدين الإسلامي، إذ جعلها في العديد من أحاديثه وصفا ملازما؛ كما في قوله: «بعثت بالحنيفية السمحة»، فرسالة النبي عليه الصلاة والسلام رسالة حنيفية أي : مائلة عن الباطل إلى الحق ، ورسالة سمحة أي : سهلة يسيرة; فكل حياته وتشريعاته وإرشاداته قائمة على اليسر والسماحة والتخفيف على أمته .</p>
+            <p>قال الله تعالى: ﴿ فَبِمَا رَحْمَةٍ مِنَ اللَّهِ لِنْتَ لَهُمْ وَلَوْ كُنْتَ فَظًّا غَلِيظَ الْقَلْبِ لَانْفَضُّوا مِنْ حَوْلِكَ فَاعْفُ عَنْهُمْ وَاسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِي الْأَمْرِ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ إِنَّ اللَّهَ يُحِبُّ الْمُتَوَكِّلِينَ ﴾</p>
+            <p>وقال تعالى : ﴿ الَّذِينَ يُنْفِقُونَ فِي السَّرَّاءِ وَالضَّرَّاءِ وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ ﴾.</p>
+            <p>والتسامح مطلوب في جميع المعاملات العامة بين الناس ، وفي التعامل الاجتماعي مع المسلمين ، بالعفو عمن أساء ، وصلة من قطع ، وإعطاء من منع .</p>
+            <p>التسامح خلق الرسل والأنبياء عليهم الصلاة والسلام ، والمصلحين في الأمم على مر التاريخ ، لأن التسامح بوابة لتحقيق ما أرسلوا به وما يدعون إليه ، والنبي عليه الصلاة والسلام من أنبل البشر وأفضلهم أخلاقا ، ففي يوم فتح مكة قال لأهل مكة الذين آذوه وحاربوه وأخرجوه من داره : ( اذهبوا فأنتم الطلقاء ) .</p>
+            <p>ها هو أنس بن مالك - رضي الله عنه خادم رسول الله يخبرنا عن خلق النبي عليه الصلاة والسلام وسماحته مع من يخدمه ، ويقضي حوائجه ، فيقول: ( خدمت الرسول عشر سنين ، والله ما قال لي : أفٍّ قط ، ولا قال لي لشيء : لم فعلت كذا ، وهلَّا فعلت كذا ) رواه مسلم.</p>
+        </div>
+    </div>
+    
+    <div class="score-board" id="score-board-main" style="display: none;">
+        <div style="color: var(--score-label-color);">النقاط الحالية: <span id="current-score" style="color: var(--score-value-color);">0</span> 🌟</div>
+        <div style="color: var(--score-label-color);">الدرجة النهائية: <span id="max-score-display" style="color: var(--score-value-color);">25</span> نقطة.</div>
+    </div>
+
+    <div class="quiz-section" style="display: none;">
+
+        <div id="stage-1" class="stage">
+            </div>
+
+        <div id="stage-2" class="stage">
+            </div>
+
+        <div id="stage-3" class="stage">
+            </div>
+
+        <div id="results" class="results stage">
+            <h2>🎉 مبروك! نهاية مهمة بطل التسامح 🎉</h2>
+            
+            <p style="font-size: 1.5em; margin-bottom: 25px;">لقد حصلت على مجموع نقاط قدره: <strong id="final-score" style="color:var(--result-score-highlight);">0</strong> نقطة من <span id="final-max-score">25</span>.</p>
+            
+            <div class="achievement-message" id="final-message"></div>
+
+            <p style="font-size: 1.1em; color: #5d4037; margin-top: 30px;">
+                <span id="type-display"></span>: <br> 
+                الاسم: <span id="display-name" class="student-data-highlight"></span> <br> 
+                الصف/الفصل: <span id="display-class" class="student-data-highlight"></span> 
+            </p>
+            
+            <button class="stage-btn" id="print-btn" onclick="printCertificate()">طباعة شهادة التسامح 🖨️</button>
+            <button class="stage-btn" onclick="location.reload()" style="background-color: var(--primary-color);">العب مجدداً 🔄</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer" style="color: #5D3A9B;">
+	 تصميم المعلمة : وفاء الغامدي
+</div>
+<div class="footer" style="color: #5D3A9B;">
+	 قائدة المدرسة: فلانة الفلاني 
+</div>
+
+<script>
+    let score = 0;
+    const maxScore = 25; 
+    const pointValue = 1;
+
+    let studentName = "";
+    let studentClass = "";
+    let studentGender = "";
+
+    // Function to dynamically apply the selected theme
+    function applyTheme(gender) {
+        const root = document.documentElement;
+        if (gender === 'طالبة') {
+            root.style.setProperty('--primary-color', '#AD1457');      
+            root.style.setProperty('--secondary-color', '#f48fb1');    
+            root.style.setProperty('--background-light', '#fce4ec');   
+            root.style.setProperty('--highlight-color', '#ff5722');    
+            root.style.setProperty('--accent-color', '#f06292');       
+            root.style.setProperty('--results-bg', '#f8bbd0');         
+            root.style.setProperty('--text-dark', '#880e4f');          
+            root.style.setProperty('--result-score-highlight', '#CC0000');
+            document.getElementById('game-body').classList.add('female-theme');
+        } else {
+            // Default Male/Teal Theme
+            root.style.setProperty('--primary-color', '#00796b');
+            root.style.setProperty('--secondary-color', '#4db6ac');
+            root.style.setProperty('--background-light', '#e3f2fd');
+            root.style.setProperty('--highlight-color', '#ff9800');
+            root.style.setProperty('--accent-color', '#ffb74d');
+            root.style.setProperty('--results-bg', '#e0f7fa');
+            root.style.setProperty('--text-dark', '#1565c0');
+            root.style.setProperty('--result-score-highlight', '#CC0000');
+            document.getElementById('game-body').classList.remove('female-theme');
+        }
+    }
+
+    // --- Data: Questions and Answers (Retained from previous version) ---
+    const questions = {
+        // --- True/False Questions (Stage 1) - 10 Q (1 pt each = 10) ---
+        tf: [
+            { id: 'tf1', q: "التسامح خلق شامل ينضوي تحته أخلاق مثل الرحمة والسلام.", a: true, points: pointValue, answered: false, feedback_c: "صحيح! التسامح هو خلق عظيم يجمع بين الرحمة والرأفة والعطف والسلام.", feedback_i: "خطأ. التسامح ليس خلقاً بسيطاً، بل هو خلق شامل يضم الرحمة والرأفة والسلام كما ورد في النص." },
+            { id: 'tf2', q: "العفو والصفح عن المسيئين مطلوب فقط عند عدم القدرة على الرد.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! العفو مطلوب حتى مع القدرة على الرد، وهذا هو قمة القوة.", feedback_i: "خطأ. العفو والصفح مطلوبان بخاصة عند **القدرة على الرد**، وهذا دليل قوة لا ضعف." },
+            { id: 'tf3', q: "رسالة النبي صلى الله عليه وسلم كانت سمحة أي سهلة يسيرة.", a: true, points: pointValue, answered: false, feedback_c: "صحيح! هذا هو معنى 'رسالة سمحة' أي قائمة على اليسر والتخفيف على الأمة.", feedback_i: "خطأ. رسالة النبي (ﷺ) وسمحتها تعني أنها سهلة يسيرة، وليست صعبة ومتشددة." },
+            { id: 'tf4', q: "قوله تعالى: ﴿وَلَوْ كُنْتَ فَظًّا غَلِيظَ الْقَلْبِ لَانْفَضُّوا مِنْ حَوْلِكَ﴾ يدل على أهمية القسوة.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! الآية تدل على أهمية اللين والرحمة (التسامح) وتجنب الفظاظة.", feedback_i: "خطأ. الآية تدل على أن الفظاظة وغلظة القلب تؤدي إلى تفرق الناس وابتعادهم، لذا يجب التحلي بالتسامح واللين." },
+            { id: 'tf5', q: "التسامح مطلوب في جميع المعاملات العامة والاجتماعية بين الناس.", a: true, points: pointValue, answered: false, feedback_c: "صحيح! التسامح يشمل العفو عمن أساء، وصلة من قطع، وإعطاء من منع في كل المعاملات.", feedback_i: "خطأ. التسامح مطلوب في جميع المعاملات العامة والاجتماعية دون استثناء." },
+            { id: 'tf6', q: "في يوم فتح مكة، عاقب النبي (ﷺ) أهل مكة الذين آذوه عقاباً شديداً.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! النبي (ﷺ) لم يعاقبهم بل قال لهم: 'اذهبوا فأنتم الطلقاء'، وهذا أعظم مثال للتسامح.", feedback_i: "خطأ. التسامح النبوي ظهر في أبهى صوره بقوله: 'اذهبوا فأنتم الطلقاء' رغم أذاهم." },
+            { id: 'tf7', q: "أنس بن مالك خدم الرسول (ﷺ) خمس سنوات فقط.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! خدم أنس بن مالك الرسول (ﷺ) عشر سنين، وهذا ما أكده الحديث الوارد في النص.", feedback_i: "خطأ. خدم أنس بن مالك رسول الله (ﷺ) عشر سنين، ولم يقل له 'أفّ' قط." },
+            { id: 'tf8', q: "التشدد و التعصب من الأخلاق التي ينضوي تحتها التسامح.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! التشدد والتعصب ليسا من التسامح، بل يجب نبذهما.", feedback_i: "خطأ. التشدد والتعصب هما نقيض التسامح، لذا يجب نبذهما." },
+            { id: 'tf9', q: "الآية ﴿وَالْعَافِينَ عَنِ النَّاسِ﴾ تربط العفو بمحبة الله للمحسنين.", a: true, points: pointValue, answered: false, feedback_c: "صحيح! الآية تُختم بقوله تعالى: ﴿وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ﴾، مما يربط العفو بالإحسان.", feedback_i: "خطأ. الآية تربط العفو بالإحسان، مما يدل على محبة الله لمن يعفو عن الناس." },
+            { id: 'tf10', q: "التسامح ليس من أخلاق الرسل والأنبياء، بل هو خاص بالمصلحين فقط.", a: false, points: pointValue, answered: false, feedback_c: "صحيح! التسامح هو خلق الرسل والأنبياء والمصلحين على مر التاريخ.", feedback_i: "خطأ. التسامح خلق الرسل والأنبياء لأنه بوابة لتحقيق ما أرسلوا به وما يدعون إليه." }
+        ],
+        
+        // --- Multiple Choice Questions (Stage 2) - 10 Q (1 pt each = 10) ---
+        mc: [
+            { id: 'mc1', q: "خلق التسامح ينضوي تحته نبذ:", options: ["الرحمة", "العدل", "التعصب في صوره الجاهلية", "العفو والصفح"], a: 2, points: pointValue, answered: false, feedback_c: "إجابة صحيحة! التسامح يحارب التعصب والتشدد لأنهما ضدان له.", feedback_i: "إجابة خاطئة. التسامح هو نقيض التعصب، لذا يجب نبذ التعصب الجاهلي." },
+            { id: 'mc2', q: "ما معنى رسالة النبي (ﷺ) 'حنيفية'؟", options: ["قائمة على الشدة", "مائلة عن الباطل إلى الحق", "قديمة جداً", "صعبة ومجهدة"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. الحنيفية تعني الميل عن الباطل إلى الحق، والسماحة تعني اليسر.", feedback_i: "إجابة خاطئة. رسالة النبي (ﷺ) 'حنيفية' تعني أنها مائلة عن الباطل إلى الحق." },
+            { id: 'mc3', q: "التسامح يمثل بوابة لتحقيق ما أُرسل به:", options: ["المعلمين فقط", "الرسل والأنبياء", "القادة العسكريين", "كافة البشر"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. التسامح خلق الرسل والأمم لتحقيق هدفهم بالدعوة للخير.", feedback_i: "إجابة خاطئة. التسامح هو خلق الأنبياء والرسل لأنه يفتح لهم أبواب الدعوة إلى الخير." },
+            { id: 'mc4', q: "قول أنس بن مالك: 'ما قال لي : أفٍّ قط' يدل على:", options: ["علم النبي صلى الله عليه وسلم", "سماحة النبي (ﷺ) وعفوه", "انشغال النبي (ﷺ) عنه", "كرم النبي صلى الله عليه وسلم"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. هذا الحديث يوضح مدى سماحة النبي ولينه حتى مع من يخدمه.", feedback_i: "إجابة خاطئة. هذا الحديث من أبلغ ما قيل في وصف سماحة النبي (ﷺ) وعفوه ولينه في التعامل." },
+            { id: 'mc5', q: "التسامح في التعامل الاجتماعي مع المسلمين يعني:", options: ["مقاطعة من أساء إليك", "العفو عمن أساء وصلة من قطع", "منع الإحسان عن الجميع", "التركيز على الأخطاء"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. التسامح في المعاملات يشمل العفو وصلة القاطع.", feedback_i: "إجابة خاطئة. التسامح يعني العفو عن المسيء وصلة القاطع وإعطاء من منع." },
+            { id: 'mc6', q: "الذي يجعل حياة النبي (ﷺ) وتشريعاته قائمة على اليسر والسماحة هو:", options: ["الغضب", "الكره", "التخفيف على أمته", "الانتقام"], a: 2, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. السماحة هي التخفيف على الأمة والابتعاد عن الشدة.", feedback_i: "إجابة خاطئة. كل حياة النبي (ﷺ) كانت قائمة على التخفيف على أمته والتيسير عليها." },
+            { id: 'mc7', q: "التسامح يتضمن خلق العدل و الإحسان، وكذلك العفو والصفح عن المسيئين بخاصة عند:", options: ["الخوف منهم", "القدرة على الرد", "الضعف وعدم الحيلة", "انشغالك عنهم"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. العفو عند القدرة على الرد هو قمة التسامح والأخلاق.", feedback_i: "إجابة خاطئة. التسامح الحقيقي يظهر عند القدرة على الرد لكنك تختار العفو." },
+            { id: 'mc8', q: "رسالة النبي (ﷺ) سمحة أي:", options: ["صعبة ومجهدة", "سهلة ويسيرة", "متقطعة وقليلة", "فقط لأهل مكة"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. السماحة مرادفة لليسر والسهولة.", feedback_i: "إجابة خاطئة. معنى 'سمحة' هو سهلة ويسيرة." },
+            { id: 'mc9', q: "الذين ينفقون في السَّرَّاءِ وَالضَّرَّاءِ ويأتون بالتسامح هم:", options: ["المسيئون", "الأنبياء فقط", "المتوكلون", "المحسنون"], a: 3, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. الآية تربط التسامح بالإحسان، والله يحب المحسنين.", feedback_i: "إجابة خاطئة. الآية الكريمة ذكرت أن الله يحب المحسنين، وهم الذين يكظمون الغيظ ويعفون عن الناس." },
+            { id: 'mc10', q: "خلق السلام يعد الشعار الأول لـ:", options: ["الخصومة", "الإسلام والمسلمين", "الجهل", "التشدد"], a: 1, points: pointValue, answered: false, feedback_c: "إجابة صحيحة. السلام هو الشعار الأول والأهم لديننا.", feedback_i: "إجابة خاطئة. خلق السلام هو الشعار الأول للإسلام والمسلمين، وينضوي تحت خلق التسامح." }
+        ],
+        
+        // --- Fill in the Blanks Questions (Stage 3) - 5 Q (1 pt each = 5) ---
+        fib: [
+            { id: 'fib1', q: "خلق التسامح ينضوي تحته عدة أخلاق أخرى، ومن أهمها: الرحمة، والرأفة والعطف، وخلق ______.", a: ["السلام"], points: pointValue, checked: false, feedback_c: "صحيح! السلام هو الشعار الأول للإسلام وهو أحد فروع التسامح.", feedback_i: "خطأ. التسامح خلق شامل يضم الرحمة والرأفة وخلق **السلام**." },
+            { id: 'fib2', q: "رسالة النبي عليه الصلاة والسلام رسالة سمحة أي : سهلة ______.", a: ["يسيرة"], points: pointValue, checked: false, feedback_c: "صحيح! الرسالة السمحة هي السهلة اليسيرة القائمة على التخفيف.", feedback_i: "خطأ. رسالة النبي (ﷺ) سمحة أي سهلة **يسيرة**." },
+            { id: 'fib3', q: "التسامح مطلوب في جميع المعاملات العامة بين الناس، وفي التعامل الاجتماعي مع المسلمين، بـ ______ عمن أساء.", a: ["العفو"], points: pointValue, checked: false, feedback_c: "صحيح! العفو هو أساس التعامل الاجتماعي المتسامح.", feedback_i: "خطأ. التسامح الاجتماعي يكون بـ **العفو** عمن أساء، وصلة من قطع." },
+            { id: 'fib4', q: "العفو والصفح عن المسيئين مطلوبان بخاصة عند القدرة على ______.", a: ["الرد"], points: pointValue, checked: false, feedback_c: "صحيح! العفو عند القدرة على الرد هو أرقى مستويات التسامح.", feedback_i: "خطأ. القوة الحقيقية تظهر عند القدرة على **الرد** وتختار العفو." },
+            { id: 'fib5', q: "خدم أنس بن مالك رسول الله ______ سنين.", a: ["عشر"], points: pointValue, checked: false, feedback_c: "صحيح! أنس بن مالك خدم النبي (ﷺ) عشر سنين.", feedback_i: "خطأ. خادم رسول الله أنس بن مالك خدم النبي (ﷺ) **عشر** سنين." }
+        ]
+    };
+    
+    // --- Helper Functions ---
+    
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function updateScore() {
+        document.getElementById('current-score').innerText = score;
+    }
+
+    function getAchievementMessage(score, maxScore, gender) {
+        const percentage = (score / maxScore) * 100;
+        let message = "";
+        
+        // Custom gendered phrasing for the achievement message
+        const isFemale = gender === 'طالبة';
+        const title = isFemale ? 'يا بطلة التسامح' : 'يا بطل التسامح';
+        const pronoun = isFemale ? 'أنتِ' : 'أنت';
+        const noun = isFemale ? 'نموذج' : 'قدوة';
+
+        if (percentage >= 90) {
+            message = `مبارك لك ${title}! درجتك ممتازة، ${pronoun} ${noun} في تطبيق خلق التسامح. استمر في نشر المحبة واليسر.`;
+        } else if (percentage >= 70) {
+            message = `أداء رائع ${title}! لقد أظهرت فهماً قوياً لأهمية العفو والصفح. ${pronoun} على طريق الرسل في التعامل بأخلاق الإسلام الرفيعة.`;
+        } else if (percentage >= 50) {
+            message = `أداء جيد ${title}. لديك أساس ممتاز، ولكنك بحاجة لمراجعة النص مرة أخرى للوصول لأفضل الدرجات. التسامح يبدأ بقرار يومي!`;
+        } else {
+            message = `بداية موفقة ${title}. خلق التسامح يحتاج إلى تدريب يومي. راجع نص الاختبار لتفهم المعاني العميقة للرحمة والعفو. ننتظر منك درجة أعلى في المحاولة القادمة.`;
+        }
+        return message;
+    }
+
+    function generateCertificateContent(score, maxScore, name, className, gender) {
+        const title = (gender === 'طالبة') ? 'شهادة تقدير لبطلة التسامح' : 'شهادة تقدير لبطل التسامح';
+        const message = getAchievementMessage(score, maxScore, gender).replace(/يا بطلة التسامح|يا بطل التسامح/g, ''); // Remove general title
+        const achievementText = (score === maxScore) ? 'بـ **الدرجة الكاملة**' : `بدرجة امتياز قدرها`;
+        
+        return `
+            <div id="print-area" style="font-family: 'Tajawal', sans-serif; padding: 50px; border: 10px solid #00796b; background-color: #f0f8ff; margin: 20px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.2);">
+                <h1 class="certificate-title">${title}</h1>
+                <div class="certificate-text">
+                    <p style="font-size: 20pt; margin-bottom: 30px; color: #37474f;">
+                        تُمنح هذه الشهادة للطالب/ـة المتميز/ة:
+                    </p>
+                    <p>الاسم: <span class="certificate-highlight">${name}</span></p>
+                    <p>الصف/الفصل: <span class="certificate-highlight">${className}</span></p>
+                    <p style="margin-top: 30px; font-weight: 900; color: #4CAF50;">
+                        لقد حصلت علي
+                        <span class="score-highlight-print">${score}</span> من <span style="font-size: 28pt; color: #CC0000; font-weight: 900;">${maxScore}</span> نقطة.
+                    </p>
+                    <p style="margin-top: 40px; color: #1565c0; font-style: italic; font-weight: 700; font-size: 18pt;">
+                        " ${message} "
+                    </p>
+                </div>
+            </div>
+        `;
+    }
+
+    function printCertificate() {
+        const certificateHtml = generateCertificateContent(score, maxScore, studentName, studentClass, studentGender);
+        
+        const printWindow = window.open('', '', 'height=800,width=800');
+        
+        // Write content to the new window
+        printWindow.document.write('<html><head><title>شهادة التسامح</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap");');
+        printWindow.document.write('body { font-family: "Tajawal", sans-serif; direction: rtl; padding: 0; margin: 0; }');
+        printWindow.document.write('.certificate-title { font-size: 30pt; color: #00796b; border-bottom: 4px solid #4db6ac; padding-bottom: 15px; margin-bottom: 30px; text-align: center; font-weight: 900; }');
+        printWindow.document.write('.certificate-text { font-size: 18pt; margin-bottom: 20pt; line-height: 2; text-align: center; font-weight: 700; }');
+        printWindow.document.write('.certificate-highlight { font-size: 24pt; color: #1565c0; font-weight: 900; margin: 0 10px; display: inline-block; }'); // Name/Class highlight
+        printWindow.document.write('.score-highlight-print { font-size: 28pt; color: #4CAF50; font-weight: 900; margin: 0 10px; }'); // Score highlight
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write(certificateHtml);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        
+        // Wait for the styles/fonts to load before printing
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    }
+    
+    // Renders the persistent reading text (to be called in each stage)
+    function renderReadingText() {
+        // Updated Audio Link: https://drive.google.com/file/d/1aq6uFc02Psf6475t9KgJn8lT_QZzK2Wo/view?usp=sharing
+        const audioLink = "https://drive.google.com/file/d/1aq6uFc02Psf6475t9KgJn8lT_QZzK2Wo/view?usp=sharing";
+
+        return `
+            <div class="text-section reading-text-placeholder" style="margin-bottom: 20px;">
+                <a href="${audioLink}" target="_blank" class="audio-icon" title="استمع للنص القرائي">🔊</a>
+                <span class="read-instruction">النص القرائي ( التسامح ):</span>
+                <p><b>التسامح:</b> خلق شامل ينضوي تحته عدة أخلاق أخرى ، ومن أهمها: الرحمة، والرأفة والعطف، وخلق السلام الذي يعد الشعار الأول للإسلام والمسلمين ، والعدل والإحسان ، والعفو والصفح عن المسيئين ، وبخاصة عند القدرة على الرد ، والاعتدال وعدم التشدد ، ونبذ التعصب في صوره الجاهلية كلها .</p>
+                <p>وقد ربط النبي عليه الصلاة والسلام بين السماحة وبين أصل الدين الإسلامي، إذ جعلها في العديد من أحاديثه وصفا ملازما؛ كما في قوله: «بعثت بالحنيفية السمحة»، فرسالة النبي عليه الصلاة والسلام رسالة حنيفية أي : مائلة عن الباطل إلى الحق ، ورسالة سمحة أي : سهلة يسيرة; فكل حياته وتشريعاته وإرشاداته قائمة على اليسر والسماحة والتخفيف على أمته .</p>
+                <p>قال الله تعالى: ﴿ فَبِمَا رَحْمَةٍ مِنَ اللَّهِ لِنْتَ لَهُمْ وَلَوْ كُنْتَ فَظًّا غَلِيظَ الْقَلْبِ لَانْفَضُّوا مِنْ حَوْلِكَ فَاعْفُ عَنْهُمْ وَاسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِي الْأَمْرِ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ إِنَّ اللَّهَ يُحِبُّ الْمُتَوَكِّلِينَ ﴾</p>
+                <p>وقال تعالى : ﴿ الَّذِينَ يُنْفِقُونَ فِي السَّرَّاءِ وَالضَّرَّاءِ وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ ﴾.</p>
+                <p>والتسامح مطلوب في جميع المعاملات العامة بين الناس ، وفي التعامل الاجتماعي مع المسلمين ، بالعفو عمن أساء ، وصلة من قطع ، وإعطاء من منع .</p>
+                <p>التسامح خلق الرسل والأنبياء عليهم الصلاة والسلام ، والمصلحين في الأمم على مر التاريخ ، لأن التسامح بوابة لتحقيق ما أرسلوا به وما يدعون إليه ، والنبي عليه الصلاة والسلام من أنبل البشر وأفضلهم أخلاقا ، ففي يوم فتح مكة قال لأهل مكة الذين آذوه وحاربوه وأخرجوه من داره : ( اذهبوا فأنتم الطلقاء ) .</p>
+                <p>ها هو أنس بن مالك - رضي الله عنه خادم رسول الله يخبرنا عن خلق النبي عليه الصلاة والسلام وسماحته مع من يخدمه ، ويقضي حوائجه ، فيقول: ( خدمت الرسول عشر سنين ، والله ما قال لي : أفٍّ قط ، ولا قال لي لشيء : لم فعلت كذا ، وهلَّا فعلت كذا ) رواه مسلم.</p>
+            </div>
+        `;
+    }
+
+    // --- Stage Rendering Functions ---
+
+    function renderTF() {
+        const container = document.getElementById('stage-1');
+        
+        // 1. Render Reading Text first
+        container.innerHTML = renderReadingText();
+        
+        // 2. Render Scoreboard
+        container.innerHTML += `
+            <div class="score-board" style="display: flex;">
+                <div style="color: var(--score-label-color);">النقاط الحالية: <span id="current-score-stage1" style="color: var(--score-value-color);">${score}</span> 🌟</div>
+                <div style="color: var(--score-label-color);">الدرجة النهائية: <span style="color: var(--score-value-color);">25</span> نقطة.</div>
+            </div>
+            <h2>المرحلة الأولى: أساسيات التسامح (10 أسئلة صح وخطأ - 1 نقطة للسؤال)</h2>
+            <div id="tf-questions"></div>
+            <button class="stage-btn" id="next-stage-1" onclick="checkAllAnswered(1, 10)">انتقل للمرحلة التالية ➡️</button>
+        `;
+        
+        const qContainer = document.getElementById('tf-questions');
+        shuffle(questions.tf).forEach((q, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.id = `q-${q.id}`;
+            qDiv.innerHTML = `<p>${index + 1}. ${q.q}</p>
+                <button class="option-btn" data-q="${q.id}" data-a="true" onclick="selectTF(this, '${q.id}', 1)">صح</button>
+                <button class="option-btn" data-q="${q.id}" data-a="false" onclick="selectTF(this, '${q.id}', 1)">خطأ</button>
+                <div id="feedback-${q.id}" class="feedback"></div>`;
+            qContainer.appendChild(qDiv);
+        });
+        document.getElementById('current-score').innerText = score; // Update main score
+    }
+
+    function renderMC() {
+        const container = document.getElementById('stage-2');
+        container.innerHTML = renderReadingText() + `
+            <div class="score-board" style="display: flex;">
+                <div style="color: var(--score-label-color);">النقاط الحالية: <span id="current-score-stage2" style="color: var(--score-value-color);">${score}</span> 🌟</div>
+                <div style="color: var(--score-label-color);">الدرجة النهائية: <span style="color: var(--score-value-color);">25</span> نقطة.</div>
+            </div>
+            <h2>المرحلة الثانية: مفاهيم التسامح (10 أسئلة اختيار من متعدد - 1 نقطة للسؤال)</h2>
+            <div id="mc-questions"></div>
+            <button class="stage-btn" id="next-stage-2" onclick="checkAllAnswered(2, 10)">انتقل للمرحلة الأخيرة ➡️</button>
+        `;
+        
+        const qContainer = document.getElementById('mc-questions');
+        shuffle(questions.mc).forEach((q, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.id = `q-${q.id}`;
+            qDiv.innerHTML = `<p>${index + 1}. ${q.q}</p>`;
+            
+            q.options.forEach((option, oIndex) => {
+                const isCorrect = oIndex === q.a;
+                qDiv.innerHTML += `<button class="option-btn" data-q="${q.id}" data-o="${oIndex}" data-correct="${isCorrect}" onclick="selectMC(this, '${q.id}', ${isCorrect}, 2)">${option}</button>`;
+            });
+            qDiv.innerHTML += `<div id="feedback-${q.id}" class="feedback"></div>`;
+            qContainer.appendChild(qDiv);
+        });
+        document.getElementById('current-score').innerText = score; // Update main score
+    }
+
+    function renderFIB() {
+        const container = document.getElementById('stage-3');
+        container.innerHTML = renderReadingText() + `
+            <div class="score-board" style="display: flex;">
+                <div style="color: var(--score-label-color);">النقاط الحالية: <span id="current-score-stage3" style="color: var(--score-value-color);">${score}</span> 🌟</div>
+                <div style="color: var(--score-label-color);">الدرجة النهائية: <span style="color: var(--score-value-color);">25</span> نقطة.</div>
+            </div>
+            <h2>المرحلة الثالثة: بناء التسامح (5 أسئلة أكمل الفراغ - 1 نقطة للسؤال)
+                <span class="stage-3-note"><span class="red-text">تنبيه: يجب ان تكون الإجابة من النص وتأكد من سلامتها من الأخطاء الإملائية</span></span>
+            </h2>
+            <div id="fib-questions"></div>
+            <button class="stage-btn" id="next-stage-3" onclick="checkAllAnswered(3, 5)">عرض النتيجة النهائية 🏆</button>
+        `;
+        
+        const qContainer = document.getElementById('fib-questions');
+        shuffle(questions.fib).forEach((q, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question fill-in';
+            qDiv.id = `q-${q.id}`;
+            
+            const initialInput = document.createElement('input');
+            initialInput.type = 'text';
+            initialInput.id = `fib-input-${q.id}`;
+            initialInput.placeholder = 'اكتب الإجابة هنا';
+            initialInput.required = true;
+            
+            const checkButton = document.createElement('button');
+            checkButton.className = 'check-btn';
+            checkButton.innerText = 'تحقق من الإجابة';
+            checkButton.disabled = true; // Initially disabled
+            checkButton.style.opacity = '0.6';
+
+            // Event listener to enable check button on input change
+            initialInput.oninput = function() {
+                const button = this.closest('.question').querySelector('.check-btn');
+                if (button) {
+                    // Enable if there is text, disable if empty
+                    const hasText = this.value.trim() !== '';
+                    button.disabled = !hasText;
+                    button.style.opacity = hasText ? '1' : '0.6';
+                }
+            };
+            checkButton.onclick = () => checkFIB(q.id, 3);
+            
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.id = `feedback-${q.id}`;
+            feedbackDiv.className = 'feedback';
+            
+            // Build the question paragraph, using outerHTML for the input element
+            qDiv.innerHTML = `<p>${index + 1}. ${q.q.replace('______', initialInput.outerHTML)}</p>`;
+            
+            // Re-select the dynamically created input element and attach the event handler again
+            qDiv.querySelector('input').oninput = initialInput.oninput;
+            
+            qDiv.appendChild(checkButton);
+            qDiv.appendChild(feedbackDiv);
+            
+            qContainer.appendChild(qDiv);
+        });
+        document.getElementById('current-score').innerText = score; // Update main score
+    }
+
+    // --- Interaction and Checking Functions ---
+
+    function checkAllAnswered(stageIndex, totalQuestions) {
+        let unansweredCount = 0;
+        let questionData = [];
+        
+        if (stageIndex === 1) {
+            questionData = questions.tf;
+        } else if (stageIndex === 2) {
+            questionData = questions.mc;
+        } else if (stageIndex === 3) {
+            questionData = questions.fib;
+            
+            // --- STEP 1: FORCE GRADING OF ALL UNCHECKED FIB INPUTS ---
+            questionData.forEach(q => {
+                const input = document.getElementById(`fib-input-${q.id}`);
+                // Check if input exists and hasn't been checked
+                if (input && !q.checked) {
+                    // Check if input has text before forcing a check, to count truly unanswered
+                    if (input.value.trim() !== '') {
+                        checkFIB(q.id, 3); 
+                    } else {
+                        unansweredCount++;
+                    }
+                }
+            });
+        }
+
+        questionData.forEach(q => {
+            const isAnswered = (stageIndex === 3) ? q.checked : q.answered;
+            
+            if (!isAnswered) {
+                unansweredCount++;
+            }
+        });
+
+        if (unansweredCount === 0) {
+            nextStage(stageIndex + 1);
+        } else {
+            alert(`الرجاء الإجابة على جميع الأسئلة! لديك ${unansweredCount} سؤال لم يتم حله.`);
+        }
+    }
+    
+    function selectTF(button, qId, stageIndex) {
+        const qData = questions.tf.find(q => q.id === qId);
+        if (!qData || qData.answered) return;
+        
+        const selectedAnswer = button.dataset.a === 'true';
+        const correct = qData.a;
+        const feedbackDiv = document.getElementById(`feedback-${qId}`);
+        
+        const qDiv = button.closest('.question');
+        qDiv.querySelectorAll('.option-btn').forEach(btn => {
+            btn.disabled = true;
+        });
+        
+        if (selectedAnswer === correct) {
+            button.classList.add('correct');
+            score += qData.points;
+            feedbackDiv.style.backgroundColor = '#e8f5e9';
+            feedbackDiv.style.color = '#388E3C';
+            feedbackDiv.innerHTML = `✅ ${qData.feedback_c}`;
+        } else {
+            button.classList.add('incorrect');
+            qDiv.querySelector(`[data-a="${correct}"]`).classList.add('correct');
+            feedbackDiv.style.backgroundColor = '#ffebee';
+            feedbackDiv.style.color = '#D32F2F';
+            feedbackDiv.innerHTML = `❌ ${qData.feedback_i}`;
+        }
+        qData.answered = true;
+        updateScore();
+        if (stageIndex === 1) document.getElementById('current-score-stage1').innerText = score;
+    }
+
+    function selectMC(button, qId, stageIndex) {
+        const qData = questions.mc.find(q => q.id === qId);
+        if (!qData || qData.answered) return;
+
+        const isCorrect = button.dataset.correct === 'true';
+        const feedbackDiv = document.getElementById(`feedback-${qId}`);
+        
+        const qDiv = button.closest('.question');
+        qDiv.querySelectorAll('.option-btn').forEach(btn => {
+            btn.disabled = true;
+        });
+
+        if (isCorrect) {
+            button.classList.add('correct');
+            score += qData.points;
+            feedbackDiv.style.backgroundColor = '#e8f5e9';
+            feedbackDiv.style.color = '#388E3C';
+            feedbackDiv.innerHTML = `✅ ${qData.feedback_c || 'إجابة صحيحة! أحسنت.'}`;
+        } else {
+            button.classList.add('incorrect');
+            // Highlight correct answer
+            qDiv.querySelector(`[data-correct="true"]`).classList.add('correct');
+            feedbackDiv.style.backgroundColor = '#ffebee';
+            feedbackDiv.style.color = '#D32F2F';
+            feedbackDiv.innerHTML = `❌ ${qData.feedback_i || 'إجابة خاطئة. راجع النص.'}`;
+        }
+        qData.answered = true;
+        updateScore();
+        if (stageIndex === 2) document.getElementById('current-score-stage2').innerText = score;
+    }
+
+    function checkFIB(qId, stageIndex) {
+        const qData = questions.fib.find(q => q.id === qId);
+        if (!qData || qData.checked) return;
+        
+        const input = document.getElementById(`fib-input-${qId}`);
+        const userAnswer = input.value.trim().toLowerCase();
+        const feedbackDiv = document.getElementById(`feedback-${qId}`);
+        const checkBtn = input.closest('.fill-in').querySelector('.check-btn');
+
+        const isCorrect = qData.a.some(correctAnswer => userAnswer === correctAnswer.toLowerCase());
+        
+        if (isCorrect) {
+            score += qData.points;
+            input.style.backgroundColor = '#81c784';
+            input.style.color = 'white';
+            feedbackDiv.style.backgroundColor = '#e8f5e9';
+            feedbackDiv.style.color = '#388E3C';
+            feedbackDiv.innerHTML = `✅ ${qData.feedback_c}`;
+        } else {
+            input.style.backgroundColor = '#e57373';
+            input.style.color = 'white';
+            feedbackDiv.style.backgroundColor = '#ffebee';
+            feedbackDiv.style.color = '#D32F2F';
+            feedbackDiv.innerHTML = `❌ ${qData.feedback_i}. (الإجابة الصحيحة هي: ${qData.a[0]})`;
+        }
+        
+        qData.checked = true;
+        qData.answered = true; // Mark as answered
+        input.disabled = true;
+        if(checkBtn) {
+            checkBtn.disabled = true;
+            checkBtn.style.opacity = '0.5';
+        }
+        updateScore();
+        if (stageIndex === 3) document.getElementById('current-score-stage3').innerText = score;
+    }
+    
+    // Function to handle moving from first page to intro page (now the only button)
+    function checkInputsAndGoToIntro() {
+        studentName = document.getElementById('student-name').value.trim();
+        studentClass = document.getElementById('student-class').value.trim();
+        const selectedGender = document.querySelector('input[name="gender"]:checked');
+        studentGender = selectedGender ? selectedGender.value : '';
+
+        if (studentName && studentClass && studentGender) {
+            
+            // Apply theme based on gender before showing next screens
+            applyTheme(studentGender);
+
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('intro-page-content').style.display = 'block';
+            
+            // Set initial scores display
+            document.getElementById('max-score-display').innerText = maxScore;
+            document.getElementById('final-max-score').innerText = maxScore;
+
+            // Hide the actual quiz stages until the main start button is clicked
+            document.getElementById('stage-1').style.display = 'none';
+            document.getElementById('stage-2').style.display = 'none';
+            document.getElementById('stage-3').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            
+            // Ensure score-board is NOT displayed on the intro page (Page 2)
+            document.getElementById('score-board-main').style.display = 'none'; 
+
+        } else {
+            alert('الرجاء تعبئة جميع الحقول قبل البدء بالاختبار.');
+        }
+    }
+
+    // Custom function to handle starting the quiz after reading the text (Page 2)
+    function startQuiz() {
+         document.getElementById('intro-page-content').style.display = 'none'; // Hide the Page 2 content
+         
+         document.getElementById('score-board-main').style.display = 'flex'; // Show score board for quiz stages
+         document.querySelector('.quiz-section').style.display = 'block'; // Ensure quiz section is visible
+         nextStage(1);
+    }
+    
+    document.getElementById('start-quiz-btn').onclick = checkInputsAndGoToIntro;
+
+
+    // --- Stage Progression Logic ---
+    function nextStage(stageNumber) {
+        // Hide all quiz stages
+        document.getElementById('intro-page-content').style.display = 'none';
+        document.getElementById('stage-1').style.display = 'none';
+        document.getElementById('stage-2').style.display = 'none';
+        document.getElementById('stage-3').style.display = 'none';
+        document.getElementById('results').style.display = 'none';
+
+
+        if (stageNumber === 1) {
+            document.getElementById('stage-1').style.display = 'block';
+            renderTF();
+        } else if (stageNumber === 2) {
+            document.getElementById('stage-2').style.display = 'block';
+            renderMC();
+        } else if (stageNumber === 3) {
+            document.getElementById('stage-3').style.display = 'block';
+            renderFIB();
+        } else if (stageNumber === 4) {
+            // Final Results Display
+            document.getElementById('score-board-main').style.display = 'none'; 
+            document.getElementById('results').style.display = 'block';
+            
+            document.getElementById('final-score').innerText = score;
+            
+            // Get message based on score
+            const finalMessageHtml = getAchievementMessage(score, maxScore, studentGender);
+            document.getElementById('final-message').innerHTML = finalMessageHtml;
+            
+            // Display student info
+            document.getElementById('display-name').innerText = studentName;
+            document.getElementById('display-class').innerText = studentClass;
+            document.getElementById('display-gender').innerText = studentGender;
+        }
+    }
+</script>
+
+</body>
+</html>
